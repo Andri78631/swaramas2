@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_sale_boq_sale_user,Sale BoQ Access for Sale User,model_sale_boq,sales_team.group_sale_salesman,1,1,1,1
+access_sale_boq_line_sale_user,Sale BoQ Line Access for Sale User,model_sale_boq_line,sales_team.group_sale_salesman,1,1,1,1

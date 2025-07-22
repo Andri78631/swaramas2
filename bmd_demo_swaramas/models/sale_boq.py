@@ -20,6 +20,13 @@ class SaleBoQ(models.Model):
         comodel_name='res.company',
         required=True, index=True,
         default=lambda self: self.env.company)
+    currency_id = fields.Many2one(
+        comodel_name='res.currency',
+        compute='_compute_currency_id',
+        store=True,
+        precompute=True,
+        ondelete='restrict'
+    )
     partner_id = fields.Many2one(comodel_name="res.partner", string="Customer",
                                  required=True, ondelete="restrict", index=True)
     state = fields.Selection(
@@ -28,10 +35,11 @@ class SaleBoQ(models.Model):
         readonly=True, copy=False, index=True,
         tracking=3,
         default='draft')
-    # date_expired = fields.Date(string="Expiration Date", required=False)
-    # date_quotation = fields.Datetime(string="Quotation Date", required=False)
-    # pricelist_id = fields.Many2one(comodel_name="product.pricelist", string="Pricelist", required=False, ondelete="restrict", index=True)
-    # payment_term_id = fields.Many2one(comodel_name="account.payment.term", string="Payment Terms", required=False, ondelete="restrict", index=True)
+    boq_line = fields.One2many(
+        comodel_name='sale.boq.line',
+        inverse_name='boq_id',
+        string="BoQ Lines",
+        copy=True)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -47,3 +55,46 @@ class SaleBoQ(models.Model):
 
     def action_cancel(self):
         self.write({'state': 'cancel'})
+
+    @api.depends('company_id')
+    def _compute_currency_id(self):
+        for boq in self:
+            boq.currency_id = boq.company_id.currency_id
+
+
+class SaleBoQLine(models.Model):
+    _name = 'sale.boq.line'
+    _description = 'BoQ Line'
+
+    boq_id = fields.Many2one(
+        comodel_name='sale.boq',
+        string="BoQ Reference",
+        required=True, ondelete='cascade', index=True, copy=False)
+    currency_id = fields.Many2one(
+        related='boq_id.currency_id',
+        depends=['boq_id.currency_id'],
+        store=True, precompute=True)
+    name = fields.Text(
+        string="Description",
+        store=True, readonly=False, required=True)
+    product_id = fields.Many2one(
+        comodel_name='product.product',
+        string="Product",
+        change_default=True, ondelete='restrict', index='btree_not_null',
+        domain="[('sale_ok', '=', True)]")
+    product_uom_qty = fields.Float(
+        string="Quantity",
+        digits='Product Unit of Measure', default=1.0,
+        store=True, readonly=False, required=True)
+    price_unit = fields.Float(
+        string="Unit Price",
+        digits='Product Price',
+        store=True, readonly=False, required=True)
+    price_subtotal = fields.Monetary(
+        string="Subtotal",
+        compute='_compute_amount',
+        store=True, precompute=True)
+
+    def _compute_amount(self):
+        for line in self:
+            line.price_subtotal = line.product_uom_qty * line.price_unit
