@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+  <record id="action_window_sale_boq" model="ir.actions.act_window">
+    <field name="name">BoQ</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">sale.boq</field>
+    <field name="view_mode">list,form</field>
+    <field name="path">boq</field>
+  </record>
+</odoo>
