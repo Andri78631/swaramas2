@@ -8,6 +8,8 @@
         <header>
           <button name="action_confirm" string="Confirm" class="oe_highlight" type="object" invisible="state != 'draft'"/>
           <button name="action_cancel" string="Cancel" type="object" invisible="state != 'boq'"/>
+          <button name="action_draft" string="Set to Draft" type="object" invisible="state != 'cancel'"/>
+          <button name="action_view_sale_order" string="View Sale Order" type="object" class="oe_highlight" invisible="not sale_order_id"/>
           <field name="state" widget="statusbar" statusbar_visible="draft,boq"/>
         </header>
         <sheet>
@@ -22,6 +24,7 @@
                 widget="res_partner_many2one"
                 context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}"
                 placeholder="Type to find a customer..." readonly="state in ['cancel', 'sale']"/>
+              <field name="sale_order_id" readonly="1" invisible="not sale_order_id"/>
               <field name="company_id" invisible="1"/>
               <field name="currency_id" invisible="1"/>
             </group>
@@ -31,9 +34,11 @@
               <field name="boq_line">
                 <list editable="bottom">
                   <field name="currency_id" column_invisible="1"/>
+                  <field name="product_uom_category_id" column_invisible="1"/>
                   <field name="product_id"/>
                   <field name="name"/>
                   <field name="product_uom_qty"/>
+                  <field name="product_uom" groups="uom.group_uom"/>
                   <field name="price_unit"/>
                   <field name="price_subtotal" readonly="1"/>
                 </list>
