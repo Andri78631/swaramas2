@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="0">
+  <record id="list_sale_boq" model="ir.ui.view">
+    <field name="name">Sale BoQ List View</field>
+    <field name="model">sale.boq</field>
+    <field name="arch" type="xml">
+      <list string="Sale BoQ">
+        <field name="currency_id" column_invisible="1"/>
+        <field name="name"/>
+        <field name="partner_id"/>
+        <field name="amount_total" string="Total"/>
+      </list>
+    </field>
+  </record>
+
   <record id="form_sale_boq" model="ir.ui.view">
     <field name="name">BoQ Form View</field>
     <field name="model">sale.boq</field>
@@ -9,7 +22,8 @@
           <button name="action_confirm" string="Confirm" class="oe_highlight" type="object" invisible="state != 'draft'"/>
           <button name="action_cancel" string="Cancel" type="object" invisible="state != 'boq'"/>
           <button name="action_draft" string="Set to Draft" type="object" invisible="state != 'cancel'"/>
-          <button name="action_view_sale_order" string="View Sale Order" type="object" class="oe_highlight" invisible="not sale_order_id"/>
+          <button name="action_view_sale_order" string="View Sale Order" type="object" class="oe_highlight"
+            invisible="not sale_order_id"/>
           <field name="state" widget="statusbar" statusbar_visible="draft,boq"/>
         </header>
         <sheet>
@@ -43,6 +57,13 @@
                   <field name="price_subtotal" readonly="1"/>
                 </list>
               </field>
+              <group name="note_group" col="6" class="mt-2 mt-md-0">
+                <group colspan="4" class="order-1 order-lg-0">
+                </group>
+                <group class="oe_subtotal_footer d-flex order-0 order-lg-1 flex-column gap-0" name="boq_total">
+                  <field name="amount_total" nolabel="1" readonly="1"/>
+                </group>
+              </group>
             </page>
           </notebook>
         </sheet>

@@ -33,13 +33,18 @@ class SaleBoQ(models.Model):
         selection=SALE_BOQ_STATE,
         string="Status",
         readonly=True, copy=False, index=True,
-        tracking=3,
         default='draft')
     boq_line = fields.One2many(
         comodel_name='sale.boq.line',
         inverse_name='boq_id',
         string="BoQ Lines",
         copy=True)
+    amount_total = fields.Monetary(
+        string="Total Amount",
+        compute='_compute_amount_total',
+        store=True,
+        precompute=True,
+        currency_field='currency_id')
     sale_order_id = fields.Many2one(
         comodel_name='sale.order',
         string="Generated Sale Order",
@@ -120,6 +125,11 @@ class SaleBoQ(models.Model):
     def _compute_currency_id(self):
         for boq in self:
             boq.currency_id = boq.company_id.currency_id
+
+    @api.depends('boq_line.price_subtotal')
+    def _compute_amount_total(self):
+        for boq in self:
+            boq.amount_total = sum(boq.boq_line.mapped('price_subtotal'))
 
 
 class SaleBoQLine(models.Model):
