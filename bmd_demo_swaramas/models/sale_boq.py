@@ -93,6 +93,7 @@ class SaleBoQ(models.Model):
                     'product_uom_qty': boq_line.product_uom_qty,
                     'product_uom': boq_line.product_uom.id if boq_line.product_uom else boq_line.product_id.uom_id.id,
                     'price_unit': boq_line.price_unit,
+                    'force_invoiced_quantity': boq_line.product_uom_qty if not boq_line.is_invoicable else 0.0,
                 }
                 sale_line_vals_list.append(sale_line_vals)
 
@@ -144,6 +145,7 @@ class SaleBoQLine(models.Model):
         related='boq_id.currency_id',
         depends=['boq_id.currency_id'],
         store=True, precompute=True)
+    is_invoicable = fields.Boolean(string="Invoicable", default=True)
     name = fields.Text(
         string="Description",
         store=True, readonly=False, required=True)
@@ -172,6 +174,7 @@ class SaleBoQLine(models.Model):
         compute='_compute_amount',
         store=True, precompute=True)
 
+    @api.depends('product_uom_qty', 'price_unit')
     def _compute_amount(self):
         for line in self:
             line.price_subtotal = line.product_uom_qty * line.price_unit
