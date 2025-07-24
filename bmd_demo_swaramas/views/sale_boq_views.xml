@@ -50,7 +50,7 @@
                   <field name="currency_id" column_invisible="1"/>
                   <field name="product_uom_category_id" column_invisible="1"/>
                   <field name="product_id"/>
-                  <field name="is_invoicable"/>
+                  <field name="is_invoiceable"/>
                   <field name="name"/>
                   <field name="product_uom_qty"/>
                   <field name="product_uom" groups="uom.group_uom"/>

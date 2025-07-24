@@ -145,7 +145,7 @@ class SaleBoQLine(models.Model):
         related='boq_id.currency_id',
         depends=['boq_id.currency_id'],
         store=True, precompute=True)
-    is_invoicable = fields.Boolean(string="Invoicable", default=True)
+    is_invoiceable = fields.Boolean(string="Invoiceable", default=True)
     name = fields.Text(
         string="Description",
         store=True, readonly=False, required=True)
